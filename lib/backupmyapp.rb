@@ -43,7 +43,7 @@ class Backupmyapp
   end
 
   def post(uri, options = {})
-    Net::HTTP.post_form(URI.parse("http://backupmyapp.local/backups/#{uri}/#{@key}"), options).body
+    Net::HTTP.post_form(URI.parse("http://backupmyapp.dev.workisfun.ru/backups/#{uri}/#{@key}"), options).body
   end
 
   def app_file_structure
