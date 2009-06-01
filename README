@@ -1,13 +1,11 @@
 Backupmyapp
 ===========
 
-Introduction goes here.
+Plugin for backup service.
 
+	script/plguin install git://github.com/workisfun/backupmyapp.git
+	script/generate backupmyapp KEY=your key from service
+	
+Enjoy using it!
 
-Example
-=======
-
-Example goes here.
-
-
-Copyright (c) 2009 [name of plugin creator], released under the MIT license
+Copyright (c) 2009 Work Is Fun, released under the MIT license.
