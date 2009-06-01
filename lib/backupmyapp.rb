@@ -6,9 +6,13 @@ require 'yaml'
 
 class Backupmyapp
 
-  def initialize
+  def initialize(init = true)
     @key = File.read(File.join(RAILS_ROOT, "config", "backupmyapp.conf"))
-    @config = YAML::load post("init")
+    @config = YAML::load post("init") if init
+  end
+  
+  def test
+    puts post("test")
   end
   
   def make_backup
