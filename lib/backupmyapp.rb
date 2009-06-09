@@ -33,6 +33,7 @@ class Backupmyapp
       BackupFile.new file, @config[:backup_path]
     end
     
+    
     Net::SSH.start(@config[:domain], @config[:user], :password => @config[:password]) do |ssh|
       backup_files.each do |file|
         ssh.exec!("mkdir -p #{file.remote_folder}")
@@ -43,7 +44,8 @@ class Backupmyapp
   end
 
   def post(uri, options = {})
-    Net::HTTP.post_form(URI.parse("http://backupmyapp.dev.workisfun.ru/backups/#{uri}/#{@key}"), options).body
+    ENV['BACKUPMYAPP_HOST'] ? domain = ENV['BACKUPMYAPP_HOST'] : domain = "backupmyapp.com"
+    return Net::HTTP.post_form(URI.parse("http://#{domain}/backups/#{uri}/#{@key}"), options).body
   end
 
   def app_file_structure
