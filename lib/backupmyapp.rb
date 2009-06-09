@@ -15,10 +15,8 @@ class Backupmyapp
     puts post("test")
   end
   
-  def make_backup
-    dump_dir = "#{RAILS_ROOT}/db/backupmyapp/#{short_time(Time.now)}"
-    FileUtils.mkdir_p(dump_dir)
-    MarshalDb.dump(dump_dir)
+  def backup
+    backup_database
     
     files = post("diff", {'files' => app_file_structure })
     files = trim_timestamps(app_file_structure) if files == "ALL"
@@ -28,18 +26,53 @@ class Backupmyapp
     post("finish")
   end
   
-  def upload_files(files)
-    backup_files = files.split("\n").collect do |file| 
-      BackupFile.new file, @config[:backup_path]
+  def restore
+    download_files post("restore")
+    load_database
+    post("finish")
+  end
+  
+  def load_database
+    MarshalDb.load(Dir.glob("#{RAILS_ROOT}/db/backupmyapp/*").last)
+  end
+  
+  def backup_database
+    dump_dir = "#{RAILS_ROOT}/db/backupmyapp/#{short_time(Time.now)}"
+    FileUtils.mkdir_p(dump_dir)
+    MarshalDb.dump(dump_dir)
+  end
+  
+  def download_files(files)
+    backup_files = collect_backup_files(files)
+
+    ssh_session do |ssh|
+      backup_files.each do |file|
+        FileUtils.mkdir_p(file.local_folder)
+        puts "#{file.remote_path} => #{file.path}"
+        ssh.sftp.download!(file.remote_path, file.path) rescue puts("Error occured")
+      end
     end
+  end
+  
+  def upload_files(files)
+    backup_files = collect_backup_files(files)
     
-    
-    Net::SSH.start(@config[:domain], @config[:user], :password => @config[:password]) do |ssh|
+    ssh_session do |ssh|
       backup_files.each do |file|
         ssh.exec!("mkdir -p #{file.remote_folder}")
         puts file.path
-        File.exists?(file.path) ? ssh.sftp.upload!(file.path, file.remote_path) : ssh.sftp.remove!(file.remote_path)
+        if File.exists?(file.path) 
+          ssh.sftp.upload!(file.path, file.remote_path) 
+        else
+          ssh.sftp.remove!(file.remote_path) rescue "No such file found"
+        end
       end
+    end
+  end
+  
+  def ssh_session
+    Net::SSH.start(@config[:domain], @config[:user], :password => @config[:password]) do |ssh|
+      yield(ssh)
     end
   end
 
@@ -47,12 +80,19 @@ class Backupmyapp
     ENV['BACKUPMYAPP_HOST'] ? domain = ENV['BACKUPMYAPP_HOST'] : domain = "backupmyapp.com"
     return Net::HTTP.post_form(URI.parse("http://#{domain}/backups/#{uri}/#{@key}"), options).body
   end
+  
+  def collect_backup_files(files)
+    files.split("\n").collect do |file| 
+      BackupFile.new file, @config[:backup_path]
+    end
+  end
 
   def app_file_structure
     arr = Array.new
     Find.find(RAILS_ROOT) do |path|
       arr << "#{short_time(File.mtime(path))}: #{path.gsub(RAILS_ROOT, '')}" if allowed?(path) && FileTest.file?(path)
     end
+    
     return arr.join("\n")
   end
   

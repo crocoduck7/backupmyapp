@@ -15,4 +15,8 @@ class BackupFile
   def remote_folder
     remote_path.gsub(File.basename(@path), '')
   end
+  
+  def local_folder
+    path.gsub(File.basename(@path), '')
+  end
 end

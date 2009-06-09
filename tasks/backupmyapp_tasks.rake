@@ -2,9 +2,14 @@ namespace :backupmyapp do
   
   desc 'Send backup to backupmyapp.com'
   
-  task :start => :environment do
+  task :backup => :environment do
     @backuper = Backupmyapp.new
-    @backuper.make_backup
+    @backuper.backup
+  end
+  
+  task :restore => :environment do
+    @backuper = Backupmyapp.new
+    @backuper.restore
   end
   
   desc "Send confirmation to backupmyapp.com"
