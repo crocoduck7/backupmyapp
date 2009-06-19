@@ -14,5 +14,11 @@ describe Backupmyapp do
       @backuper = Backupmyapp.new
       @backuper.instance_eval("@key").should == "08435fb3aa4f884cf6c27a56970c16cb\n"
     end
+    
+    it "should send request to backupmyapp.com" do
+      Net::HTTP.post_form.stub!(:body).and_return("
+        
+      ")
+    end
   end
 end

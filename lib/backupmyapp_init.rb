@@ -3,6 +3,8 @@ module BackupmyappInit
   def self.included(base)
     base.class_eval  %Q{
       before_filter :watch_backup
+      before_filter :watch_restore
+      
       require 'rake'
       require 'rake/testtask'
       require 'rake/rdoctask'

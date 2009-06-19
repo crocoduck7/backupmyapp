@@ -1,5 +1,6 @@
 require 'net/ssh'
 require 'net/sftp'
+require 'net/scp'
 require 'find'
 require 'net/http'
 require 'yaml'
@@ -9,6 +10,7 @@ class Backupmyapp
   def initialize(init = true)
     @key = File.read(File.join(RAILS_ROOT, "config", "backupmyapp.conf"))
     @config = YAML::load post("init") if init
+    @removed_files = Array.new
   end
   
   def test
@@ -45,11 +47,11 @@ class Backupmyapp
   def download_files(files)
     backup_files = collect_backup_files(files)
 
-    ssh_session do |ssh|
+    ssh_session do |scp|
       backup_files.each do |file|
         FileUtils.mkdir_p(file.local_folder)
         puts "#{file.remote_path} => #{file.path}"
-        ssh.sftp.download!(file.remote_path, file.path) rescue puts("Error occured")
+        scp.download!(file.remote_path, file.path, :preserve => true) rescue puts("Error occured")
       end
     end
   end
@@ -57,22 +59,17 @@ class Backupmyapp
   def upload_files(files)
     backup_files = collect_backup_files(files)
     
-    ssh_session do |ssh|
+    ssh_session do |scp|
       backup_files.each do |file|
-        ssh.exec!("mkdir -p #{file.remote_folder}")
         puts file.path
-        if File.exists?(file.path) 
-          ssh.sftp.upload!(file.path, file.remote_path) 
-        else
-          ssh.sftp.remove!(file.remote_path) rescue "No such file found"
-        end
+        scp.upload!(file.path, file.remote_path, :preserve => true) if File.exists?(file.path)
       end
     end
   end
   
   def ssh_session
-    Net::SSH.start(@config[:domain], @config[:user], :password => @config[:password]) do |ssh|
-      yield(ssh)
+    Net::SCP.start(@config[:domain], @config[:user], :password => @config[:password]) do |scp|
+      yield(scp)
     end
   end
 
@@ -103,7 +100,7 @@ class Backupmyapp
     @config[:allow].each do |allow_folder|
       allow = true if relative_path.match("^(#{Regexp.escape(allow_folder)})")
     end
-    
+  
     @config[:ignore].each do |ignore_folder|
       allow = false if relative_path.match("^(#{Regexp.escape(ignore_folder)})")
     end

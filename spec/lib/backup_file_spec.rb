@@ -17,4 +17,8 @@ describe BackupFile do
   it "should return correct remote folder of file" do
     @backup_file.remote_folder.should == "#{@remote_path}/public/"    
   end
+  
+  it "should return correct remote folder of file" do
+    @backup_file.local_folder.should == File.join(RAILS_ROOT, "/public/")
+  end
 end
