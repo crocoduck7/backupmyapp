@@ -50,7 +50,7 @@ class Backupmyapp
     ssh_session do |scp|
       backup_files.each do |file|
         FileUtils.mkdir_p(file.local_folder)
-        puts "#{file.remote_path} => #{file.path}"
+        puts file.path
         scp.download!(file.remote_path, file.path, :preserve => true) rescue puts("Error occured")
       end
     end
