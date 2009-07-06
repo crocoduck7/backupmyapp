@@ -87,7 +87,7 @@ class Backupmyapp
   def app_file_structure
     arr = Array.new
     Find.find(RAILS_ROOT) do |path|
-      arr << "#{short_time(File.mtime(path))}: #{path.gsub(RAILS_ROOT, '')}" if allowed?(path) && FileTest.file?(path)
+      arr << "#{short_time(File.mtime(path))}: #{path.gsub(RAILS_ROOT, '')}" if allowed?(path) && !FileTest.directory?(path)
     end
     
     return arr.join("\n")
