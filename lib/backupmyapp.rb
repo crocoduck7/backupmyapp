@@ -62,7 +62,14 @@ class Backupmyapp
     ssh_session do |scp|
       backup_files.each do |file|
         puts file.path
+        original_chmod = sprintf("%o", File.stat(file.path).mode)
+        original_chmod.gsub! original_chmod.slice(0..1), ''
+        FileUtils.chmod 0666, file.path
+        
         scp.upload!(file.path, file.remote_path, :preserve => true) if File.exists?(file.path)
+        
+        FileUtils.chmod original_chmod.to_i, file.path
+        
       end
     end
   end
