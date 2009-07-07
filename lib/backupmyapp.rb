@@ -1,5 +1,4 @@
 require 'net/ssh'
-require 'net/sftp'
 require 'net/scp'
 require 'find'
 require 'net/http'
@@ -84,13 +83,23 @@ class Backupmyapp
     end
   end
 
-  def app_file_structure
-    arr = Array.new
-    Find.find(RAILS_ROOT) do |path|
-      arr << "#{short_time(File.mtime(path))}: #{path.gsub(RAILS_ROOT, '')}" if allowed?(path) && !FileTest.directory?(path)
+  def app_file_structure(root = RAILS_ROOT, arr = [])
+    return list_dir(RAILS_ROOT).join("\n")
+  end
+
+  def list_dir(dir, arr=[])
+    Dir.new("#{dir}").each do |file|
+      next if file.match(/^\.+/)
+      
+      path = "#{dir}/#{file}"
+      if FileTest.directory?(path) || FileTest.symlink?(path)
+        list_dir(path, arr)
+      else
+        arr << "#{short_time(File.mtime(path))}: #{path.gsub(RAILS_ROOT, '')}" if allowed?(path)
+      end
     end
     
-    return arr.join("\n")
+    return arr
   end
   
   def allowed?(path)
