@@ -95,7 +95,7 @@ class Backupmyapp
       if FileTest.directory?(path) || FileTest.symlink?(path)
         list_dir(path, arr)
       else
-        arr << "#{short_time(File.mtime(path))}: #{path.gsub(RAILS_ROOT, '')}" if allowed?(path)
+        arr << "#{short_time(File.mtime(path))}: #{path.gsub(RAILS_ROOT, '')}" if allowed?(path) && File.exists?(path)
       end
     end
     
