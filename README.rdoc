@@ -3,17 +3,17 @@ Backupmyapp
 
 Requirements:
 
-net/ssh, net/sftp
+	net/ssh, net/sftp
 
 Plugin for backup service.
 
-script/plugin install git://github.com/workisfun/backupmyapp.git
-script/generate backupmyapp KEY=your key from service
-	
+	script/plugin install git://github.com/workisfun/backupmyapp.git
+	script/generate backupmyapp KEY=your key from service
+
 Then, test connection with server:
 
-rake backupmyapp:test
-	
+	rake backupmyapp:test
+
 Enjoy using it!
 
 Copyright (c) 2009 Work Is Fun, released under the MIT license.
