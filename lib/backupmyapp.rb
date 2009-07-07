@@ -84,9 +84,7 @@ class Backupmyapp
   end
 
   def app_file_structure(root = RAILS_ROOT, arr = [])
-    dir = list_dir(RAILS_ROOT)
-    puts dir.join("\n")
-    return dir.join("\n")
+    return list_dir(RAILS_ROOT).join("\n")
   end
 
   def list_dir(dir, arr=[])
