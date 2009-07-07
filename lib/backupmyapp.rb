@@ -84,7 +84,9 @@ class Backupmyapp
   end
 
   def app_file_structure(root = RAILS_ROOT, arr = [])
-    return list_dir(RAILS_ROOT).join("\n")
+    dir = list_dir(RAILS_ROOT)
+    puts dir.join("\n")
+    return dir.join("\n")
   end
 
   def list_dir(dir, arr=[])
@@ -92,7 +94,7 @@ class Backupmyapp
       next if file.match(/^\.+/)
       
       path = "#{dir}/#{file}"
-      if FileTest.directory?(path) || FileTest.symlink?(path)
+      if FileTest.directory?(path)
         list_dir(path, arr)
       else
         arr << "#{short_time(File.mtime(path))}: #{path.gsub(RAILS_ROOT, '')}" if allowed?(path) && File.exists?(path)
