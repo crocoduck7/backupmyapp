@@ -11,7 +11,7 @@ module BackupmyappInit
       require 'tasks/rails'
       
       def watch_backup
-        if params[:start_backup] && params[:start_backup] == File.read(File.join(RAILS_ROOT, "config", "backupmyapp.conf"))
+        if params[:start_backup]
           begin
             system("cd #{RAILS_ROOT} && rake backupmyapp:backup RAILS_ENV=#{RAILS_ENV}")
             logger.info "Started backupmyapp:backup"
@@ -23,7 +23,7 @@ module BackupmyappInit
       end
       
       def watch_restore
-        if params[:start_restore] && params[:start_restore] == File.read(File.join(RAILS_ROOT, "config", "backupmyapp.conf"))
+        if params[:start_restore]
           begin
             system("cd #{RAILS_ROOT} && rake backupmyapp:restore RAILS_ENV=#{RAILS_ENV}")
             logger.info "Started backupmyapp:restore"
