@@ -8,15 +8,14 @@ class Backupmyapp
 
   def initialize(init = true)
     @key = File.read(File.join(RAILS_ROOT, "config", "backupmyapp.conf"))
-    @config = YAML::load post("init") if init
-    @removed_files = Array.new
   end
   
-  def test
-    puts post("test")
+  def load_config(action)
+    @config = YAML::load post("init/#{action}")
   end
   
   def backup
+    load_config("backup")
     backup_database
     
     files = post("diff", {'files' => app_file_structure })
@@ -24,13 +23,21 @@ class Backupmyapp
     
     upload_files(files) if files.any?
     
-    post("finish")
+    post("finish/backup")
   end
   
   def restore
+    load_config("restore")
+    
     download_files post("restore")
+    post("finish/restore")
+    
     load_database
-    post("finish")
+  end
+  
+  def test
+    load_config("test")
+    puts post("test")
   end
   
   def load_database
@@ -50,7 +57,7 @@ class Backupmyapp
       backup_files.each do |file|
         FileUtils.mkdir_p(file.local_folder)
         puts file.path
-        scp.download!(file.remote_path, file.path, :preserve => true) rescue puts("Error occured")
+        scp.download!(file.remote_path, file.path, :preserve => true, :verbose => true)
       end
     end
   end
