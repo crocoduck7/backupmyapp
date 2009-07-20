@@ -11,7 +11,7 @@ class Backupmyapp
   end
   
   def load_config(action)
-    @config = YAML::load post("init/#{action}", {'directories' => Dir.glob(RAILS_ROOT).join(" ")})
+    @config = YAML::load post("init/#{action}", {'directories' => Dir.glob("#{RAILS_ROOT}/*/").join(" ").gsub(RAILS_ROOT, '')})
   end
   
   def backup
