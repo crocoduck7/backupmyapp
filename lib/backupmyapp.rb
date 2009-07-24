@@ -15,24 +15,34 @@ class Backupmyapp
   end
   
   def backup
-    load_config("backup")
-    backup_database
+    begin
+      load_config("backup")
+      backup_database
+
+      files = post("diff", {'files' => app_file_structure })
+      files = trim_timestamps(app_file_structure) if files == "ALL"
     
-    files = post("diff", {'files' => app_file_structure })
-    files = trim_timestamps(app_file_structure) if files == "ALL"
-    
-    upload_files(files) if files.any?
+      upload_files(files) if files.any?
+    rescue
+      puts "Error occured: #{$!}"
+      post ("error", {:body => "On backup: #{$!}"}) 
+    end
     
     post("finish/backup")
   end
   
   def restore
-    load_config("restore")
+    begin
+      load_config("restore")
     
-    download_files post("restore")
-    post("finish/restore")
+      download_files post("restore")
+      post("finish/restore")
     
-    load_database
+      load_database
+    rescue
+      puts "Error occured: #{$!}"
+      post ("error", {:body => "On restore: #{$!}"})
+    end
   end
   
   def test
@@ -46,6 +56,7 @@ class Backupmyapp
   
   def backup_database
     dump_dir = "#{RAILS_ROOT}/db/backupmyapp/#{short_time(Time.now)}"
+    FileUtils.rm_r("#{RAILS_ROOT}/db/backupmyapp/")
     FileUtils.mkdir_p(dump_dir)
     MarshalDb.dump(dump_dir)
   end
