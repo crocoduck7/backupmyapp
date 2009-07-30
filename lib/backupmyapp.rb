@@ -70,7 +70,7 @@ class Backupmyapp
   
   def backup_database
     dump_dir = "#{RAILS_ROOT}/db/backupmyapp/#{short_time(Time.now)}"
-    FileUtils.rm_r("#{RAILS_ROOT}/db/backupmyapp/")
+    FileUtils.rm_r("#{RAILS_ROOT}/db/backupmyapp/") if File.exists?("#{RAILS_ROOT}/db/backupmyapp/")
     FileUtils.mkdir_p(dump_dir)
     MarshalDb.dump(dump_dir)
   end
@@ -89,12 +89,30 @@ class Backupmyapp
   
   def upload_files(files)
     backup_files = collect_backup_files(files)
-    
     ssh_session do |scp|
-      backup_files.each do |file|
+      do_files_upload(backup_files, scp)
+    end
+  end
+  
+  def do_files_upload(backup_files, scp, try = 1)
+    failed_files = []
+    puts "Retry to upload No. #{try}"
+    
+    backup_files.each do |file|
+      if File.exists?(file.path)
         puts file.path
-        scp.upload!(file.path, file.remote_path, :preserve => true) if File.exists?(file.path)
+        if File.readable?(file.path)
+          scp.upload!(file.path, file.remote_path, :preserve => true)
+        else
+          failed_files << file
+        end
       end
+    end
+    
+    if try < 4
+      do_files_upload(failed_files, scp, try + 1) if failed_files.any?
+    else
+      post("error", {:body => "On backup: These files are not readable: #{failed_files.collect {|f| f.path}.join("\n")}"})
     end
   end
   
@@ -127,7 +145,7 @@ class Backupmyapp
       if FileTest.directory?(path)
         list_dir(path, arr)
       else
-        arr << "#{short_time(File.mtime(path))}: #{path.gsub(RAILS_ROOT, '')}" if allowed?(path) && File.exists?(path)
+        arr << "#{short_time(File.mtime(path).utc)}: #{path.gsub(RAILS_ROOT, '')}" if allowed?(path) && File.exists?(path)
       end
     end
     
