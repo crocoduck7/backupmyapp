@@ -1,8 +1,21 @@
-require 'net/ssh'
-require 'net/scp'
+def require_gem_or_unpacked_gem(name, version = nil)
+  unpacked_gems_path = Pathname(__FILE__).dirname.parent + 'gems'
+  
+  begin
+    gem name, version if version
+    require name
+  rescue Gem::LoadError, MissingSourceFile
+    $: << Pathname.glob(unpacked_gems_path + "#{name.gsub('/', '-')}*").last + 'lib'
+    require name
+  end
+end
+
 require 'find'
 require 'net/http'
 require 'yaml'
+
+require_gem_or_unpacked_gem 'net/ssh'
+require_gem_or_unpacked_gem 'net/scp'
 
 class Backupmyapp
 
@@ -15,34 +28,35 @@ class Backupmyapp
   end
   
   def backup
-    begin
-      load_config("backup")
-      backup_database
+    load_config("backup")
+    if @config
+      begin
+        backup_database
 
-      files = post("diff", {'files' => app_file_structure })
-      files = trim_timestamps(app_file_structure) if files == "ALL"
+        files = post("diff", {'files' => app_file_structure })
+        files = trim_timestamps(app_file_structure) if files == "ALL"
     
-      upload_files(files) if files.any?
-    rescue
-      puts "Error occured: #{$!}"
-      post ("error", {:body => "On backup: #{$!}"}) 
+        upload_files(files) if files.any?
+      rescue
+        puts "Error occured: #{$!}"
+        post ("error", {:body => "On backup: #{$!}"}) 
+      end
+      post("finish/backup")
+    else
+      puts "Backup not allowed now"
     end
-    
-    post("finish/backup")
   end
   
   def restore
     begin
       load_config("restore")
-    
-      download_files post("restore")
-      post("finish/restore")
-    
+      download_files post("restore")    
       load_database
     rescue
       puts "Error occured: #{$!}"
       post ("error", {:body => "On restore: #{$!}"})
     end
+    post("finish/restore")
   end
   
   def test
