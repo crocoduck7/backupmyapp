@@ -30,9 +30,5 @@ module BackupmyappInit
       end
     }, __FILE__, __LINE__
   end
-  
-  def self.add_routes
-    ActionController::Routing::Routes.add_route 'backupmyapp', :controller => 'application', :action => 'backupmyapp'
-  end
-  
+    
 end
