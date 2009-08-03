@@ -5,11 +5,6 @@ module BackupmyappInit
       before_filter :watch_backup
       before_filter :watch_restore
       
-      require 'rake'
-      require 'rake/testtask'
-      require 'rake/rdoctask'
-      require 'tasks/rails'
-      
       def watch_backup
         if params[:start_backup]
           begin
@@ -34,6 +29,10 @@ module BackupmyappInit
         end
       end
     }, __FILE__, __LINE__
+  end
+  
+  def self.add_routes
+    ActionController::Routing::Routes.add_route 'backupmyapp', :controller => 'application', :action => 'backupmyapp'
   end
   
 end
