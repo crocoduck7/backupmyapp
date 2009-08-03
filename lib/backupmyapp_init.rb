@@ -8,7 +8,7 @@ module BackupmyappInit
       def watch_backup
         if params[:start_backup]
           begin
-            system("cd #{RAILS_ROOT} && rake backupmyapp:backup RAILS_ENV=#{RAILS_ENV}")
+            system("cd #{RAILS_ROOT} && rake backupmyapp:backup RAILS_ENV=#{RAILS_ENV} &")
             logger.info "Started backupmyapp:backup"
             render(:text => "OK")
           rescue
@@ -20,7 +20,7 @@ module BackupmyappInit
       def watch_restore
         if params[:start_restore]
           begin
-            system("cd #{RAILS_ROOT} && rake backupmyapp:restore RAILS_ENV=#{RAILS_ENV}")
+            system("cd #{RAILS_ROOT} && rake backupmyapp:restore RAILS_ENV=#{RAILS_ENV} &")
             logger.info "Started backupmyapp:restore"
             render(:text => "OK")
           rescue
