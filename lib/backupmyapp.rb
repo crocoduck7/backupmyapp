@@ -39,7 +39,7 @@ class Backupmyapp
         upload_files(files) if files.any?
       rescue
         puts "Error occured: #{$!}"
-        post ("error", {:body => "On backup: #{$!}"}) 
+        post "error", {:body => "On backup: #{$!}"}
       end
       post("finish/backup")
     else
@@ -50,11 +50,11 @@ class Backupmyapp
   def restore
     begin
       load_config("restore")
-      download_files post("restore")    
+      download_files post("restore")
       load_database
     rescue
       puts "Error occured: #{$!}"
-      post ("error", {:body => "On restore: #{$!}"})
+      post "error", {:body => "On restore: #{$!}"}
     end
     post("finish/restore")
   end
@@ -108,8 +108,8 @@ class Backupmyapp
         end
       end
     end
-    
-    if try < 4
+
+    if try <= 3
       do_files_upload(failed_files, scp, try + 1) if failed_files.any?
     else
       post("error", {:body => "On backup: These files are not readable: #{failed_files.collect {|f| f.path}.join("\n")}"})
@@ -123,10 +123,10 @@ class Backupmyapp
   end
 
   def post(uri, options = {})
-    ENV['BACKUPMYAPP_HOST'] ? domain = ENV['BACKUPMYAPP_HOST'] : domain = "backupmyapp.com"
+    domain = ENV['BACKUPMYAPP_HOST'] || "backupmyapp.local"
     return Net::HTTP.post_form(URI.parse("http://#{domain}/backups/#{uri}/#{@key}"), options).body
   end
-  
+
   def collect_backup_files(files)
     files.split("\n").collect do |file| 
       BackupFile.new file, @config[:backup_path]
@@ -140,12 +140,12 @@ class Backupmyapp
   def list_dir(dir, arr=[])
     Dir.new("#{dir}").each do |file|
       next if file.match(/^\.+/)
-      
+
       path = "#{dir}/#{file}"
       if FileTest.directory?(path)
         list_dir(path, arr)
-      else
-        arr << "#{short_time(File.mtime(path).utc)}: #{path.gsub(RAILS_ROOT, '')}" if allowed?(path) && File.exists?(path)
+      elsif allowed?(path) && File.exists?(path)
+        arr << "#{short_time(File.mtime(path).utc)}: #{path.gsub(RAILS_ROOT, '')}"
       end
     end
     
@@ -155,15 +155,15 @@ class Backupmyapp
   def allowed?(path)
     allow = false
     relative_path = path.gsub(RAILS_ROOT, '')
-    
+
     @config[:allow].each do |allow_folder|
       allow = true if relative_path.match("^(#{Regexp.escape(allow_folder)})")
     end
-  
+
     @config[:ignore].each do |ignore_folder|
       allow = false if relative_path.match("^(#{Regexp.escape(ignore_folder)})")
     end
-    
+
     return allow
   end
   
