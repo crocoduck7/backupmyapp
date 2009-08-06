@@ -1,8 +1,8 @@
 namespace :backupmyapp do
   desc "Test connection to backupmyapp.com"
-  task :test_connection, :only => { :primary => true } do
+  task :connect, :only => { :primary => true } do
     rails_env = fetch(:rails_env, "production")
-    run "cd #{current_path}; rake backupmyapp:test RAILS_ENV=#{rails_env}"
+    run "cd #{current_path}; rake backupmyapp:connect RAILS_ENV=#{rails_env}"
   end
 
   desc "Send backup to backupmyapp.com"

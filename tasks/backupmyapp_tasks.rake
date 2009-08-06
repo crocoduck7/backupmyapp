@@ -13,7 +13,7 @@ namespace :backupmyapp do
   end
   
   desc "Send confirmation to backupmyapp.com"
-  task :test => :environment do
+  task :connect => :environment do
     @backuper = Backupmyapp.new(false)
     @backuper.test
   end
