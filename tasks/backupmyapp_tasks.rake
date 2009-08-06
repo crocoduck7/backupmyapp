@@ -7,6 +7,7 @@ namespace :backupmyapp do
     @backuper.backup
   end
   
+  desc "Download data from backupmyapp.com"
   task :restore => :environment do
     @backuper = Backupmyapp.new
     @backuper.restore
