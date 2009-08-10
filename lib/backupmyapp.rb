@@ -35,7 +35,7 @@ class Backupmyapp
 
         files = post("diff", {'files' => app_file_structure })
         files = trim_timestamps(app_file_structure) if files == "ALL"
-    
+
         upload_files(files) if files.any?
       rescue
         puts "Error occured: #{$!}"
@@ -100,7 +100,7 @@ class Backupmyapp
     
     backup_files.each do |file|
       if File.exists?(file.path)
-        puts file.path
+        puts "upload: "+file.path
         if File.readable?(file.path)
           scp.upload!(file.path, file.remote_path, :preserve => true)
         else
@@ -124,6 +124,7 @@ class Backupmyapp
 
   def post(uri, options = {})
     domain = ENV['BACKUPMYAPP_HOST'] || "backupmyapp.local"
+#    puts Net::HTTP.post_form(URI.parse("http://#{domain}/backups/#{uri}/#{@key}"), options).body
     return Net::HTTP.post_form(URI.parse("http://#{domain}/backups/#{uri}/#{@key}"), options).body
   end
 
@@ -168,7 +169,7 @@ class Backupmyapp
   end
   
   def trim_timestamps(text)
-    text.gsub(/[0-9]+: /, '')
+    text.gsub(/\d{14} \d+ /, '')
   end
   
   def short_time(date)
