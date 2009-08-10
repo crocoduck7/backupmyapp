@@ -7,13 +7,14 @@ namespace :backupmyapp do
     @backuper.backup
   end
   
+  desc "Download data from backupmyapp.com"
   task :restore => :environment do
     @backuper = Backupmyapp.new
     @backuper.restore
   end
   
   desc "Send confirmation to backupmyapp.com"
-  task :test => :environment do
+  task :connect => :environment do
     @backuper = Backupmyapp.new(false)
     @backuper.test
   end
