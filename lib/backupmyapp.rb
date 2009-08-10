@@ -145,7 +145,7 @@ class Backupmyapp
       if FileTest.directory?(path)
         list_dir(path, arr)
       elsif allowed?(path) && File.exists?(path)
-        arr << "#{short_time(File.mtime(path).utc)}: #{path.gsub(RAILS_ROOT, '')}"
+        arr << "#{short_time(File.mtime(path).utc)} #{File.size(path)} #{path.gsub(RAILS_ROOT, '')}"
       end
     end
     
