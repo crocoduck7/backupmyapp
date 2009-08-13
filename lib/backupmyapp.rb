@@ -124,7 +124,6 @@ class Backupmyapp
 
   def post(uri, options = {})
     domain = ENV['BACKUPMYAPP_HOST'] || "backupmyapp.local"
-#    puts Net::HTTP.post_form(URI.parse("http://#{domain}/backups/#{uri}/#{@key}"), options).body
     return Net::HTTP.post_form(URI.parse("http://#{domain}/backups/#{uri}/#{@key}"), options).body
   end
 
