@@ -224,6 +224,33 @@ describe Backupmyapp do
       @backuper.restore
     end
   end
+
+  describe "Download files" do
+    before(:each) do
+      @backuper = Backupmyapp.new
+      assign_config
+      
+      Net::SCP.stub!(:start)
+    end
+    
+    it "should start ssh session" do
+      @backuper.should_receive(:ssh_session)
+      @backuper.download_files("file1")
+    end
+    
+    it "should collect backup files" do
+      @backuper.should_receive(:collect_backup_files).with("file1")
+      @backuper.download_files("file1")
+    end
+    
+    it "should upload files" do
+      scp = TestScp.new
+      Net::SCP.stub!(:start).and_return(scp)
+      file = BackupFile.new("file1", @options[:backup_path])
+      @backuper.download_files("file1")
+    end
+  end
+  
   
   def expect_load_config
     @backuper.stub!(:root_directories).and_return("app public")
@@ -270,5 +297,10 @@ dir4/
   
   def short_time(date)
     date.utc.strftime("%Y%m%d%H%M%S")
+  end
+  
+  class TestScp
+    def initialize
+    end
   end
 end
