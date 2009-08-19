@@ -24,26 +24,30 @@ class Backupmyapp
   end
   
   def load_config(action)
-    @config = YAML::load post("init/#{action}", {'directories' => Dir.glob("#{RAILS_ROOT}/*/").join(" ").gsub(RAILS_ROOT, '')})
+    @config = YAML::load post("init/#{action}", {'directories' => root_directories})
+  end
+  
+  def root_directories
+    Dir.glob("#{RAILS_ROOT}/*/").join(" ").gsub(RAILS_ROOT, '')
   end
   
   def backup
     load_config("backup")
-    if @config
+    if @config && @config[:allow].any?
       begin
         backup_database
 
         files = post("diff", {'files' => app_file_structure })
         files = trim_timestamps(app_file_structure) if files == "ALL"
 
-        upload_files(files) if files.any?
+        upload_files(files) if files && files.any?
       rescue
         puts "Error occured: #{$!}"
         post "error", {:body => "On backup: #{$!}"}
       end
       post("finish/backup")
     else
-      puts "Backup not allowed now"
+      puts "Backup not allowed"
     end
   end
   
@@ -149,6 +153,7 @@ class Backupmyapp
       end
     end
     
+
     return arr
   end
   

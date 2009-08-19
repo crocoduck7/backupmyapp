@@ -10,8 +10,5 @@ describe BackupmyappInit do
     @controller.before_filters.should include(:watch_backup)
     @controller.before_filters.should include(:watch_restore)
   end
-  
-  describe "watch_backup method" do
-    
-  end
+
 end
