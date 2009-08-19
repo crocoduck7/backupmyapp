@@ -33,7 +33,7 @@ class Backupmyapp
   
   def backup
     load_config("backup")
-    if @config && @config[:allow].any?
+    if @config && @config[:allow]
       begin
         backup_database
 
@@ -47,7 +47,7 @@ class Backupmyapp
       end
       post("finish/backup")
     else
-      puts "Backup not allowed"
+      puts "Backup not allowed (Key invalid, or it is too early to backup)"
     end
   end
   
