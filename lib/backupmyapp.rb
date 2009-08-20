@@ -105,10 +105,10 @@ class Backupmyapp
     backup_files.each do |file|
       if File.exists?(file.path)
         puts "upload: "+file.path
-        if File.readable?(file.path)
+        begin
           scp.upload!(file.path, file.remote_path, :preserve => true)
-        else
-          failed_files << file
+        rescue
+          failed_files << file  
         end
       end
     end
@@ -127,7 +127,7 @@ class Backupmyapp
   end
 
   def post(uri, options = {})
-    domain = ENV['BACKUPMYAPP_HOST'] || "backupmyapp.com"
+    domain = ENV['BACKUPMYAPP_HOST'] || "backupmyapp.local"
     return Net::HTTP.post_form(URI.parse("http://#{domain}/backups/#{uri}/#{@key}"), options).body
   end
 
