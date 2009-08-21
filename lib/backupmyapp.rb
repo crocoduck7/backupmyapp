@@ -34,13 +34,18 @@ class Backupmyapp
   def backup
     load_config("backup")
     if @config && @config[:allow]
-      backup_database rescue post("error", {:body => "Failed to backup database"})
+      begin
+        backup_database
 
-      files = post("diff", {'files' => app_file_structure })
-      files = trim_timestamps(app_file_structure) if files == "ALL"
+        files = post("diff", {'files' => app_file_structure })
+        files = trim_timestamps(app_file_structure) if files == "ALL"
 
-      upload_files(files) if files && files.any?
-      post("finish/backup")
+        upload_files(files) if files && files.any?
+        post("finish/backup")
+      rescue
+        puts "Error occured: #{$!}"
+        post "error", {:body => "On restore: #{$!}"}
+      end
     else
       puts "Backup not allowed (Key invalid, or it is too early to backup)"
     end
