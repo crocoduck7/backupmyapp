@@ -34,17 +34,12 @@ class Backupmyapp
   def backup
     load_config("backup")
     if @config && @config[:allow]
-      begin
-        backup_database
+      backup_database rescue post("error", {:body => "Failed to backup database"})
 
-        files = post("diff", {'files' => app_file_structure })
-        files = trim_timestamps(app_file_structure) if files == "ALL"
+      files = post("diff", {'files' => app_file_structure })
+      files = trim_timestamps(app_file_structure) if files == "ALL"
 
-        upload_files(files) if files && files.any?
-      rescue
-        puts "Error occured: #{$!}"
-        post "error", {:body => "On backup: #{$!}"}
-      end
+      upload_files(files) if files && files.any?
       post("finish/backup")
     else
       puts "Backup not allowed (Key invalid, or it is too early to backup)"
@@ -105,9 +100,12 @@ class Backupmyapp
     backup_files.each do |file|
       if File.exists?(file.path)
         puts "upload: "+file.path
+        d = scp.upload(file.path, file.remote_path, :preserve => true)
+        
         begin
-          scp.upload!(file.path, file.remote_path, :preserve => true)
+          d.wait
         rescue
+          d.close
           failed_files << file  
         end
       end
