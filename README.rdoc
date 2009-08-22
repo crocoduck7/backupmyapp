@@ -1,10 +1,6 @@
 Backupmyapp
 ===========
 
-Requirements:
-
-	net/ssh, net/sftp
-
 Plugin for backup service.
 
 	script/plugin install git://github.com/workisfun/backupmyapp.git

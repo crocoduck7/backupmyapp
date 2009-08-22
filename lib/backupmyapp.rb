@@ -130,7 +130,7 @@ class Backupmyapp
   end
 
   def post(uri, options = {})
-    http = Net::HTTP.new("backupmyapp.local", 80)
+    http = Net::HTTP.new("backupmyapp.com", 80)
     http.read_timeout = 3600
     params = CGI.escape options.collect {|k, v| "#{k}=#{v}"}.join("&")
     return http.post("/backups/#{uri}/#{@key}", params).body
