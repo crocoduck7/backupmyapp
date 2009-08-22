@@ -130,8 +130,10 @@ class Backupmyapp
   end
 
   def post(uri, options = {})
-    domain = ENV['BACKUPMYAPP_HOST'] || "backupmyapp.com"
-    return Net::HTTP.post_form(URI.parse("http://#{domain}/backups/#{uri}/#{@key}"), options).body
+    http = Net::HTTP.new("backupmyapp.local", 80)
+    http.read_timeout = 3600
+    params = CGI.escape options.collect {|k, v| "#{k}=#{v}"}.join("&")
+    return http.post("/backups/#{uri}/#{@key}", params).body
   end
 
   def collect_backup_files(files)
