@@ -1,4 +1,4 @@
-ActionController::Base.send(:include, BackupmyappInit)
+ActionController::Base.send(:include, Backupmyapp::Init)
 
 ActionController::Routing::RouteSet.class_eval do
   def clear_with_clear_backupmyapp!
