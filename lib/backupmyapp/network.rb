@@ -17,6 +17,10 @@ class Backupmyapp
       post "diff", {'files' => files }
     end
     
+    def restore
+      post "restore"
+    end
+    
     def test
       post "test"
     end
