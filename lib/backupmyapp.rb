@@ -22,33 +22,43 @@ class Backupmyapp
   include Filesystem
   
   def initialize(init = true)
-    @key = File.read(File.join(RAILS_ROOT, "config", "backupmyapp.conf"))
-    @server = Backupmyapp::Network.new(@key)
+    path = File.join(RAILS_ROOT, "config", "backupmyapp.conf")
+    if File.exists?(path)
+      @key = File.read(path)
+      @server = Backupmyapp::Network.new(@key)
+    else
+      Error.no_key
+    end
   end
   
   def load_config(action)
     @config = YAML::load @server.init(action, root_directories)
+    Errorbackup_not_allowed unless @config && @config[:allow]
   end
   
-  def backup #todo: rescue block
+  def backup
     load_config("backup")
-    if @config && @config[:allow]
+    begin
       Database.backup
-      
+    
       files = @server.diff(app_file_structure)
       files = trim_timestamps(app_file_structure) if files == "ALL"
 
       upload_files(files) if files && files.any?
-      @server.finish("backup")
-    else
-      puts "Backup not allowed (Key invalid, or it is too early to backup)"
+    rescue
+      @server.error("backup", $!)
     end
+    @server.finish("backup")
   end
   
   def restore #todo: rescue block
     load_config("restore")
-    download_files @server.restore
-    Database.load
+    begin
+      download_files @server.restore
+      Database.load
+    rescue
+      @server.error("restore", $!)
+    end
     @server.finish("restore")
   end
   
