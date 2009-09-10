@@ -18,4 +18,11 @@ namespace :backupmyapp do
     @backuper = Backupmyapp.new(false)
     @backuper.test
   end
+  
+  desc "Restore database from dump"
+  
+  task :load_db => :environment do
+    Backupmyapp::Database.load
+    puts "Load success"
+  end
 end
