@@ -33,7 +33,7 @@ class Backupmyapp
   
   def load_config(action)
     @config = YAML::load @server.init(action, root_directories)
-    Errorbackup_not_allowed unless @config && @config[:allow]
+    Error.backup_not_allowed unless @config && @config[:allow]
   end
   
   def backup
