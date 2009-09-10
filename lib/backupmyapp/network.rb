@@ -1,6 +1,6 @@
 class Backupmyapp
   class Network < Struct.new(:key)
-    BMA_HOST = 'backupmyapp.local'
+    BMA_HOST = 'backupmyapp.com'
 
     def post(uri, options = {})
       http = Net::HTTP.new(BMA_HOST, 80)
