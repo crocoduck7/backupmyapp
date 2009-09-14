@@ -1,5 +1,6 @@
-require File.dirname(__FILE__) + '/../spec_helper'
+require File.dirname(__FILE__) + '/../../spec_helper'
 
+BackupFile = Backupmyapp::BackupFile
 describe BackupFile do
   before(:each) do
     @remote_path = "/home/guest/asdasd"
@@ -15,7 +16,7 @@ describe BackupFile do
   end
   
   it "should return correct remote folder of file" do
-    @backup_file.remote_folder.should == "#{@remote_path}/public/"    
+    @backup_file.remote_folder.should == "#{@remote_path}/public/"
   end
   
   it "should return correct remote folder of file" do

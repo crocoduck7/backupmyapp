@@ -1,9 +1,10 @@
-require File.dirname(__FILE__) + '/../spec_helper'
+require File.dirname(__FILE__) + '/../../spec_helper'
 
-describe BackupmyappInit do
+Init = Backupmyapp::Init
+describe Init do
   before(:each) do
     @controller = ActionController::Base
-    @controller.send(:include, BackupmyappInit)
+    @controller.send(:include, Init)
   end
   
   it "should set to application controller correct before_filter" do
