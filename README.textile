@@ -1,5 +1,3 @@
-!http://www.google.com/images/experimental.gif!
-
 Ruby on Rails backup plugin.
 
 "Backupmyapp":http://backupmyapp.com is snapshot-style backup for Ruby on Rails applications
