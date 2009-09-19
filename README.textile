@@ -1,0 +1,23 @@
+!http://www.google.com/images/experimental.gif!
+
+Ruby on Rails backup plugin.
+
+"Backupmyapp":http://backupmyapp.com is snapshot-style backup for Ruby on Rails applications
+Automatic daily backup of your Rails application. Explore history
+of backups and daily changes. Restore automatically.
+
+Installation:
+
+script/plugin install git://github.com/workisfun/backupmyapp.git
+script/generate backupmyapp KEY=your key from service
+
+Then, test connection with server:
+
+	rake backupmyapp:test
+	
+To load database from downloaded backup:
+	rake backupmyapp:load_db
+
+Enjoy using it!
+
+Copyright (c) 2009 Crocoduck Team, released under the MIT license.
