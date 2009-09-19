@@ -37,4 +37,4 @@ We store only everyday changes applied to the files. It saves both bandwidth and
 
 
 
-Copyright (c) 2009 Crocoduck Team, released under the MIT license.
+Copyright © 2009 Crocoduck Team, released under the MIT license.
