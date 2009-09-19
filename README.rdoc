@@ -1,15 +1,40 @@
-Backupmyapp
-===========
+= Backup My App
 
-Plugin for backup service.
+Rails plugin for backup and restore with {Backup My App}[http://backupmyapp.com].
 
-	script/plugin install git://github.com/workisfun/backupmyapp.git
-	script/generate backupmyapp KEY=your key from service
+== Installation
 
-Then, test connection with server:
+First you should create account on Backup My App and add your application there. You will get api-key for your application. Next you should install our plugin and provide api-key for it:
 
-	rake backupmyapp:test
+  script/plugin install git://github.com/workisfun/backupmyapp.git
+  script/generate backupmyapp KEY=[api-key]
 
-Enjoy using it!
+Then, deploy application to podection server and run backupmyapp:connect rake task:
 
-Copyright (c) 2009 Work Is Fun, released under the MIT license.
+  rake backupmyapp:connect
+
+We have the same Capistrano task for those who are using it:
+
+  cap backupmyapp:connect
+
+When you install plugin and connect it with our server, backups will be performed automatically.
+
+== Restore
+
+If you lost your files or database, but application is still working, you can restore automatically. You should log in to your account on {backupmyapp.com}[http://backupmyapp.com], find proper backup from backup history and click "Restore" button. The rest of process will work automatically.
+
+If automatic restore is not possible, you can restore manually. Find backup for restore and click "Download" button. Unzip downloaded file and upload it to production server, then run backupmyapp:restore rake task on server:
+
+  rake backupmyapp:restore
+
+You can use manual restore to clone your application on your local machine or development server.
+
+== About Backup My App
+
+Backup My App is a snapshot-style backup service for Rails applications. It performs daily backup of your files and database and you can restore your data automatically if something goes wrong on your server.
+
+We store only everyday changes applied to the files. It saves both bandwidth and backup size. So you can access backup history for several weeks or even months depending of the size of your application and your activity. If the space approaches the limit, most distant day from your backup history will be removed.
+
+
+
+Copyright (c) 2009 Crocoduck Team, released under the MIT license.
