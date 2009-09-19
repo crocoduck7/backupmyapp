@@ -1,8 +1,6 @@
 Ruby on Rails backup plugin.
 
-"Backupmyapp":http://backupmyapp.com is snapshot-style backup for Ruby on Rails applications
-Automatic daily backup of your Rails application. Explore history
-of backups and daily changes. Restore automatically.
+"Backupmyapp":http://backupmyapp.com is snapshot-style backup for Ruby on Rails applications. Automatic daily backup of your Rails application. Explore history of backups and daily changes. Restore automatically.
 
 Installation:
 
