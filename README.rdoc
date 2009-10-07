@@ -21,11 +21,13 @@ When you install plugin and connect it with our server, backups will be performe
 
 == Restore
 
-If you lost your files or database, but application is still working, you can restore automatically. You should log in to your account on {backupmyapp.com}[http://backupmyapp.com], find proper backup from backup history and click "Restore" button. The rest of process will work automatically.
+If you lost your files or database, but application is still working, you can restore automatically. You should log in to your account on {backupmyapp.com}[http://backupmyapp.com], find proper backup from backup history and click "Restore" button. The rest of process will work automatically. Also you can use rake task for this:
+
+  rake backupmyapp:restore
 
 If automatic restore is not possible, you can restore manually. Find backup for restore and click "Download" button. Unzip downloaded file and upload it to production server, then run backupmyapp:restore rake task on server:
 
-  rake backupmyapp:restore
+  rake backupmyapp:load_db
 
 You can use manual restore to clone your application on your local machine or development server.
 
