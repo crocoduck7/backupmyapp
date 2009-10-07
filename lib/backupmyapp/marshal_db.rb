@@ -115,7 +115,7 @@ class Backupmyapp
       }
     end
  
-    def self.each_table_page(table, records_per_page=50000)
+    def self.each_table_page(table, records_per_page = 1000)
       id = table_column_names(table).first
       pages = table_pages(table, records_per_page) - 1
       quoted_table = MarshalDb.quote_table(table)
