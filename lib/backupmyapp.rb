@@ -1,21 +1,6 @@
-def require_gem_or_unpacked_gem(name, version = nil)
-  unpacked_gems_path = Pathname(__FILE__).dirname.parent + 'gems'
-  
-  begin
-    gem name, version if version
-    require name
-  rescue Gem::LoadError, MissingSourceFile
-    $: << Pathname.glob(unpacked_gems_path + "#{name.gsub('/', '-')}*").last + 'lib'
-    require name
-  end
-end
-
 require 'find'
 require 'net/http'
 require 'yaml'
-
-require_gem_or_unpacked_gem 'net/ssh'
-require_gem_or_unpacked_gem 'net/scp'
 
 class Backupmyapp
   include Timestamps
@@ -25,7 +10,7 @@ class Backupmyapp
     path = File.join(RAILS_ROOT, "config", "backupmyapp.conf")
     if File.exists?(path)
       @key = File.read(path)
-      @server = Backupmyapp::Network.new(@key)
+      @server = Network.new(@key)
     else
       Error.no_key
     end
@@ -38,36 +23,29 @@ class Backupmyapp
   
   def backup
     load_config("backup")
-    begin
+    puts "Load backup"
       Database.backup
     
-      files = @server.diff(app_file_structure)
-      files = trim_timestamps(app_file_structure) if files == "ALL"
-
-      upload_files(files) if files && files.any?
-    rescue
-      @server.error("backup", $!)
-    end
+    files = @server.diff(app_file_structure)
+    files = trim_timestamps(app_file_structure) if files == "ALL"
+    puts "Get diff"
+    upload_files(files) if files && files.any?
     @server.finish("backup")
   end
   
   def restore #todo: rescue block
     load_config("restore")
-    begin
-      download_files @server.restore
-      Database.load
-    rescue
-      @server.error("restore", $!)
-    end
+    download_files @server.restore
+    Database.load
     @server.finish("restore")
   end
   
   def download_files(files)
-    Transfer.new(@config, @server).download_collection collect_backup_files(files)
+    @server.download_collection collect_backup_files(files)
   end
   
   def upload_files(files)
-    Transfer.new(@config, @server).upload_collection collect_backup_files(files)
+    @server.upload_collection collect_backup_files(files)
   end
   
   def test
