@@ -23,20 +23,26 @@ class Backupmyapp
   
   def backup
     load_config("backup")
-    puts "Load backup"
+    begin
       Database.backup
-    
-    files = @server.diff(app_file_structure)
-    files = trim_timestamps(app_file_structure) if files == "ALL"
-    puts "Get diff"
-    upload_files(files) if files && files.any?
+      files = @server.diff(app_file_structure)
+      files = trim_timestamps(app_file_structure) if files == "ALL"
+      puts "Get diff"
+      upload_files(files) if files && files.any?
+    rescue
+      @server.error("backup", $!)
+    end
     @server.finish("backup")
   end
   
-  def restore #todo: rescue block
-    load_config("restore")
-    download_files @server.restore
-    Database.load
+  def restore
+    begin
+      load_config("restore")
+      download_files @server.restore
+      Database.load
+    rescue
+      @server.error("restore", $!)
+    end
     @server.finish("restore")
   end
   
