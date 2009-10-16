@@ -21,6 +21,7 @@ class Backupmyapp
       @key = key
       @failed_downloads = @failed_uploads = Array.new
       @https = HTTPClient.new
+      @https.receive_timeout = 3600
       @https.ssl_config.verify_mode = OpenSSL::SSL::VERIFY_NONE
       @https.ssl_config.verify_depth = 5
     end

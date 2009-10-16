@@ -27,7 +27,6 @@ class Backupmyapp
       Database.backup
       files = @server.diff(app_file_structure)
       files = trim_timestamps(app_file_structure) if files == "ALL"
-      puts "Get diff"
       upload_files(files) if files && files.any?
     rescue
       @server.error("backup", $!)
