@@ -16,6 +16,7 @@ class Backupmyapp
   class Network < Struct.new(:key)
     MAX_RETRY_ATTEMPTS = 4
     HOST = "https://backupmyapp.com:443"
+    PLUGIN_VERSION = '1.0.1'
     
     def initialize(key)
       @key = key
@@ -27,6 +28,7 @@ class Backupmyapp
     end
     
     def post(uri, options = {})
+      options.merge!({:plugin_version => PLUGIN_VERSION})
       @https.post("#{HOST}/backups/#{uri}/#{@key}", options).content
     end
     
