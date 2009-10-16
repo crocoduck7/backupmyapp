@@ -16,6 +16,8 @@ ActiveRecord::Base.logger = Logger.new(PLUGIN_SPEC_DIR + "/debug.log")
 
 DUMMY_SCHEMA_PATH = File.join(PLUGIN_SPEC_DIR, "db", "schema.rb") unless defined? DUMMY_SCHEMA_PATH
 
+MarshalDb = Backupmyapp::MarshalDb
+
 class Chicken < ActiveRecord::Base
 end
 
