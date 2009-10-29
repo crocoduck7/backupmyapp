@@ -16,7 +16,7 @@ class Backupmyapp
   class Network < Struct.new(:key)
     MAX_RETRY_ATTEMPTS = 4
     HOST = "https://backupmyapp.com:443"
-    PLUGIN_VERSION = '1.0.2'
+    PLUGIN_VERSION = '1.0.3'
     
     def initialize(key)
       @key = key
