@@ -68,7 +68,7 @@ class Backupmyapp
       puts "Uploading #{file.path}"
       begin
         f = File.new(file.path)
-        params = { 'file' => f, 'mtime' => f.mtime.utc, 'location' => file.relative_path, 'key' => @key }
+        params = { 'file' => f, 'mtime' => f.mtime.utc.strftime("%m/%d/%Y %H:%M:%S %Z"), 'location' => file.relative_path, 'key' => @key }
         @https.post("#{HOST}/files/upload", params)
       rescue
         @failed_uploads << file unless @failed_uploads.include?(file)
