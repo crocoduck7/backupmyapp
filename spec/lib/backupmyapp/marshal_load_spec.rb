@@ -1,5 +1,6 @@
 require File.dirname(__FILE__) + '/../../spec_helper'
 
+MarshalDb = Backupmyapp::MarshalDbBackup
 describe MarshalDb::Load do
 	before do
   	ActiveRecord::Base.stub!(:configurations).and_return(mock('configurations'))

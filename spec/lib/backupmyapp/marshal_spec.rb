@@ -1,5 +1,5 @@
 require File.dirname(__FILE__) + '/../../spec_helper'
-
+MarshalDb = Backupmyapp::MarshalDbBackup
 describe MarshalDb do
   before do
     # ActiveRecord::Base = mock('ActiveRecord::Base', :null_object => true)
