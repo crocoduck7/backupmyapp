@@ -1,18 +1,18 @@
 require 'active_record/fixtures'
 
 class Backupmyapp
-  module MarshalDb
+  module MarshalDbBackup
     METADATA_FILE = 'metadata.dump'
  
     def self.dump(directory)
       process do
-        MarshalDb::Dump.dump(directory)
+        MarshalDbBackup::Dump.dump(directory)
       end
     end
  
     def self.load(directory)
       process do
-        MarshalDb::Load.load(directory)
+        MarshalDbBackup::Load.load(directory)
       end
     end
  
@@ -77,7 +77,7 @@ class Backupmyapp
   end
  
  
-  module MarshalDb::Dump
+  module MarshalDbBackup::Dump
     def self.dump(directory)
       MarshalDb.create_work_directory(directory)
       dump_metadata(directory)
@@ -148,7 +148,7 @@ class Backupmyapp
   end
  
  
-  module MarshalDb::Load
+  module MarshalDbBackup::Load
     def self.load(directory)
       metadata(directory).each do |m|
         truncate_table(m['table'])
