@@ -79,7 +79,7 @@ class Backupmyapp
  
   module MarshalDbBackup::Dump
     def self.dump(directory)
-      MarshalDb.create_work_directory(directory)
+      MarshalDbBackup.create_work_directory(directory)
       dump_metadata(directory)
       dump_data(directory)
     end
@@ -105,7 +105,7 @@ class Backupmyapp
       end
       metadata
  
-      File.open("#{directory}/#{MarshalDb::METADATA_FILE}", 'w') { |f| f.write(Marshal.dump(metadata)) }
+      File.open("#{directory}/#{MarshalDbBackup::METADATA_FILE}", 'w') { |f| f.write(Marshal.dump(metadata)) }
     end
  
     def self.table_metadata(table)
@@ -118,7 +118,7 @@ class Backupmyapp
     def self.each_table_page(table, records_per_page = 10000)
       id = table_column_names(table).first
       pages = table_pages(table, records_per_page) - 1
-      quoted_table = MarshalDb.quote_table(table)
+      quoted_table = MarshalDbBackup.quote_table(table)
  
       (0..pages).to_a.each do |page|
         sql = ActiveRecord::Base.connection.add_limit_offset!("SELECT * FROM #{quoted_table} ORDER BY #{id}", { :limit => records_per_page, :offset => records_per_page * page })
@@ -134,7 +134,7 @@ class Backupmyapp
     end
  
     def self.table_record_count(table)
-      quoted_table = MarshalDb.quote_table(table)
+      quoted_table = MarshalDbBackup.quote_table(table)
       ActiveRecord::Base.connection.select_one("SELECT COUNT(*) FROM #{quoted_table}").values.first.to_i
     end
  
@@ -166,18 +166,18 @@ class Backupmyapp
     end
  
     def self.metadata(directory)
-      Marshal.load(File.open("#{directory}/#{MarshalDb::METADATA_FILE}", 'r').read)
+      Marshal.load(File.open("#{directory}/#{MarshalDbBackup::METADATA_FILE}", 'r').read)
     end
  
     def self.table_data_files(directory, table)
       files = Dir.glob("#{directory}/#{table}.*")
       files.map! { |file| File.basename(file) }
-      files.reject! { |file| file == MarshalDb::METADATA_FILE }
+      files.reject! { |file| file == MarshalDbBackup::METADATA_FILE }
       files
     end
  
     def self.truncate_table(table)
-      quoted_table = MarshalDb.quote_table(table)
+      quoted_table = MarshalDbBackup.quote_table(table)
       begin
         ActiveRecord::Base.connection.execute("TRUNCATE #{quoted_table}")
       rescue Exception
@@ -186,7 +186,7 @@ class Backupmyapp
     end
  
     def self.load_records(table, columns, records)
-      quoted_table = MarshalDb.quote_table(table)
+      quoted_table = MarshalDbBackup.quote_table(table)
       quoted_columns = columns.map { |column| ActiveRecord::Base.connection.quote_column_name(column) }.join(',')
       records.each do |record|
         quoted_values = columns.map { |c| ActiveRecord::Base.connection.quote(record[c]) }.join(',')
