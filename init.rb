@@ -1,12 +1,16 @@
 ActionController::Base.send(:include, Backupmyapp::Init)
 
-if Rails.version < '2.3.0'
+# Need to add custom routes for backupmyapp
+begin
+  # If rails engines available - check it. 
+  # Else - hack routing
+  engine? 
+rescue
   ActionController::Routing::RouteSet.class_eval do
-    def clear_with_clear_backupmyapp!
-      clear_without_clear_backupmyapp!
+    alias clear_without_backupmyapp! clear!
+    def clear!
+      clear_without_backupmyapp!
       add_route 'backupmyapp', :controller => 'application', :action => 'backupmyapp'
     end
-  
-    alias_method_chain :clear!, :clear_backupmyapp
   end
 end

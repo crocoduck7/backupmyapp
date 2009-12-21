@@ -1,34 +1,21 @@
 class Backupmyapp
   module Init
     def self.included(base)
-      base.class_eval  %Q{
-        before_filter :watch_backup
-        before_filter :watch_restore
+      base.class_eval do
+        before_filter :watch_backup_actions
     
-        def watch_backup
+        def watch_backup_actions
           if params[:start_backup]
-            begin
-              system("cd #{RAILS_ROOT} && rake backupmyapp:backup RAILS_ENV=#{RAILS_ENV} &")
-              logger.info "Started backupmyapp:backup"
-              render(:text => "OK")
-            rescue
-              render(:text => "FAIL")
-            end
+            @backuper = Backupmyapp.new
+            @backuper.backup
+          elsif params[:start_restore]
+            @backuper = Backupmyapp.new
+            @backuper.restore
+          elsif params[:check_installed]
+            render :text => "installed"
           end
         end
-    
-        def watch_restore
-          if params[:start_restore]
-            begin
-              system("cd #{RAILS_ROOT} && rake backupmyapp:restore RAILS_ENV=#{RAILS_ENV} &")
-              logger.info "Started backupmyapp:restore"
-              render(:text => "OK")
-            rescue
-              render(:text => "FAIL")
-            end
-          end
-        end
-      }, __FILE__, __LINE__
+      end
     end
   end
 end
