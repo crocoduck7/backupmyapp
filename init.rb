@@ -1,7 +1,6 @@
 ActionController::Base.send(:include, Backupmyapp::Init)
 
 # Need to add custom routes for backupmyapp
-
 begin
   # If rails engines available - check it. 
   # Else - hack routing

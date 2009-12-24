@@ -14,13 +14,25 @@ class Backupmyapp
         
         def process_backups_if_required
           if params[:start_backup]
-            @backuper = Backupmyapp.new
-            @backuper.backup
+            process_backup_in_fork
           elsif params[:start_restore]
-            @backuper = Backupmyapp.new
-            @backuper.restore
+            process_restore_in_fork
           elsif params[:check_installed]
             render :text => "installed"
+          end
+        end
+        
+        def process_backup_in_fork
+          Process.fork do
+            @backuper = Backupmyapp.new
+            @backuper.backup
+          end
+        end
+        
+        def process_restore_in_fork
+          Process.fork do
+            @backuper = Backupmyapp.new
+            @backuper.restore
           end
         end
         
