@@ -25,7 +25,7 @@ module RestClient
 			@payload = Payload.generate(args[:payload])
 			@user = args[:user]
 			@password = args[:password]
-			@timeout = args[:timeout]
+			@timeout = args[:timeout] || 3600
 			@open_timeout = args[:open_timeout]
 			@raw_response = args[:raw_response] || false
 			@verify_ssl = args[:verify_ssl] || false
