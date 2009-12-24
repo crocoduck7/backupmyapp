@@ -125,7 +125,6 @@ module RestClient
 
 			net.start do |http|
 				res = http.request(req, payload) { |http_response| fetch_body(http_response) }
-				puts payload
 				result = process_result(res)
 				display_log response_log(res)
 
