@@ -1,5 +1,4 @@
 ActionController::Base.send(:include, Backupmyapp::Init)
-require 'multipart'
 
 # Need to add custom routes for backupmyapp
 
