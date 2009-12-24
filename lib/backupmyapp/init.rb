@@ -5,6 +5,14 @@ class Backupmyapp
         before_filter :watch_backup_actions
     
         def watch_backup_actions
+          begin
+            process_backups_if_required
+          rescue
+            render :text => "Error occured: $!"
+          end
+        end
+        
+        def process_backups_if_required
           if params[:start_backup]
             @backuper = Backupmyapp.new
             @backuper.backup
@@ -15,6 +23,7 @@ class Backupmyapp
             render :text => "installed"
           end
         end
+        
       end
     end
   end

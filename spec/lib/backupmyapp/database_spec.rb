@@ -14,16 +14,16 @@ describe Database do
   
   describe "Backup" do
     it "should remove database backup folder" do
-      FileUtils.mkdir_p("#{RAILS_ROOT}/db/backupmyapp/")
-      FileUtils.should_receive(:rm_r).with("#{RAILS_ROOT}/db/backupmyapp/")
+      FileUtils.mkdir_p("#{RAILS_ROOT}/tmp/backupmyapp/")
+      FileUtils.should_receive(:rm_r).with("#{RAILS_ROOT}/tmp/backupmyapp/")
       Database.backup
     end
     
     it "should create database backup folder and dump to it" do
       FileUtils.mkdir_p("#{RAILS_ROOT}/db/backupmyapp/")
       timestamp = Time.now.utc.strftime("%Y%m%d%H%M%S")
-      FileUtils.should_receive(:mkdir_p).with("#{RAILS_ROOT}/db/backupmyapp/#{timestamp}")
-      MarshalDb.should_receive(:dump).with("#{RAILS_ROOT}/db/backupmyapp/#{timestamp}")
+      FileUtils.should_receive(:mkdir_p).with("#{RAILS_ROOT}/tmp/backupmyapp/#{timestamp}")
+      MarshalDb.should_receive(:dump).with("#{RAILS_ROOT}/tmp/backupmyapp/#{timestamp}")
       Database.backup
     end
   end

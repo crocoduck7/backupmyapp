@@ -1,35 +1,20 @@
-def require_gem_or_unpacked_gem(name, version = nil)
-  unpacked_gems_path = Pathname(__FILE__).dirname.parent.parent + 'gems'
-  
-  begin
-    gem name, version if version
-    require name
-  rescue Gem::LoadError, MissingSourceFile
-    $: << Pathname.glob(unpacked_gems_path + "#{name.gsub('/', '-')}*").last + 'lib'
-    require name
-  end
-end
-
-require_gem_or_unpacked_gem 'httpclient', '2.1.5.2'
+require 'rest_client/rest_client'
 
 class Backupmyapp
-  class Network < Struct.new(:key)
+  class Network
     MAX_RETRY_ATTEMPTS = 4
-    HOST = "https://backupmyapp.com:443"
-    PLUGIN_VERSION = '1.0.3'
+    HOST = "https://backupmyapp.com"
+    PLUGIN_VERSION = '1.0.5'
     
     def initialize(key)
       @key = key
       @failed_downloads = @failed_uploads = Array.new
-      @https = HTTPClient.new
-      @https.receive_timeout = 3600
-      @https.ssl_config.verify_mode = OpenSSL::SSL::VERIFY_NONE
-      @https.ssl_config.verify_depth = 5
+      @https = RestClient
     end
     
     def post(uri, options = {})
-      options.merge!({:plugin_version => PLUGIN_VERSION})
-      @https.post("#{HOST}/backups/#{uri}/#{@key}", options).content
+      options.merge!({'plugin_version' => PLUGIN_VERSION })
+      @https.post("#{HOST}/backups/#{uri}/#{@key}", options)
     end
     
     def init(action, directories)
@@ -65,10 +50,16 @@ class Backupmyapp
     end
     
     def upload(file)
-      puts "Uploading #{file.path}"
+      puts "Uploading #{file.path}"      
       begin
         f = File.new(file.path)
-        params = { 'file' => f, 'mtime' => f.mtime.utc.strftime("%m/%d/%Y %H:%M:%S %Z"), 'location' => file.relative_path, 'key' => @key }
+        params = {
+          'file' => f,
+          'mtime' => f.mtime.utc.strftime("%m/%d/%Y %H:%M:%S %Z"),
+          'location' => file.relative_path,
+          'key' => @key
+        }
+        
         @https.post("#{HOST}/files/upload", params)
       rescue
         @failed_uploads << file unless @failed_uploads.include?(file)
@@ -83,7 +74,7 @@ class Backupmyapp
     def download(file)
       puts "Downloading #{file.path}"
       begin
-        file.restore @https.post("#{HOST}/files/restore", {:location => file.relative_path, :key => @key}).content
+        file.restore @https.post("#{HOST}/files/restore", {:location => file.relative_path, :key => @key})
       rescue
         @failed_downloads << file unless @failed_downloads.include?(file)
       end
@@ -100,7 +91,7 @@ class Backupmyapp
         if try < MAX_RETRY_ATTEMPTS
           #{action}_collection(@failed_#{action}s, try) && @failed_#{action}s.any?
         else
-          upload_error(@failed_#{action}s)
+          upload_error(@failed_#{action}s) if @failed_#{action}s.any?
         end}
     end
   end

@@ -11,7 +11,7 @@ describe Network do
     end
     
     it "should send correct request" do;
-      @net.should_receive(:post).with("#{HOST}/backups/connect/key", {}).and_return(@http_stub)
+      @net.should_receive(:post).with("#{HOST}/backups/connect/key", {:plugin_version=> Network::PLUGIN_VERSION}).and_return(@http_stub)
       @network.post("connect").should == "response"
     end
     

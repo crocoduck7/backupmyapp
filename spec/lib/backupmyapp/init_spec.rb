@@ -8,8 +8,7 @@ describe Init do
   end
   
   it "should set to application controller correct before_filter" do
-    @controller.before_filters.should include(:watch_backup)
-    @controller.before_filters.should include(:watch_restore)
+    @controller.before_filters.should include(:watch_backup_actions)
   end
 
 end

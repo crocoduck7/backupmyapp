@@ -1,8 +1,10 @@
 ActionController::Base.send(:include, Backupmyapp::Init)
+require 'multipart'
 
 # Need to add custom routes for backupmyapp
+
 begin
-  # If rails engines available - use it. 
+  # If rails engines available - check it. 
   # Else - hack routing
   engine? 
 rescue
