@@ -26,6 +26,7 @@ class Backupmyapp
           Process.fork do
             @backuper = Backupmyapp.new
             @backuper.backup
+            exit!(0)
           end
         end
         
@@ -33,6 +34,7 @@ class Backupmyapp
           Process.fork do
             @backuper = Backupmyapp.new
             @backuper.restore
+            exit!(0)
           end
         end
         
