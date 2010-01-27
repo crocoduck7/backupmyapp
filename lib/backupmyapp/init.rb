@@ -23,19 +23,23 @@ class Backupmyapp
         end
         
         def process_backup_in_fork
-          Process.fork do
+          f = Process.fork do
             @backuper = Backupmyapp.new
             @backuper.backup
             exit!(0)
           end
+          
+          Process.detach(f)
         end
         
         def process_restore_in_fork
-          Process.fork do
+          f = Process.fork do
             @backuper = Backupmyapp.new
             @backuper.restore
             exit!(0)
           end
+          
+          Process.detach(f)
         end
         
       end
