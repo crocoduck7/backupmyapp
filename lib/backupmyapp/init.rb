@@ -2,8 +2,9 @@ class Backupmyapp
   module Init
     def self.included(base)
       base.class_eval do
+        skip_before_filter filter_chain, :only => [:backupmyapp]
         before_filter :watch_backup_actions
-    
+        
         def watch_backup_actions
           begin
             process_backups_if_required

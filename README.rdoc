@@ -9,15 +9,7 @@ First you should create account on Backup My App and add your application there.
   script/plugin install git://github.com/workisfun/backupmyapp.git
   script/generate backupmyapp KEY=[api-key]
 
-Then, deploy application to podection server and run backupmyapp:connect rake task:
-
-  rake backupmyapp:connect
-
-We have the same Capistrano task for those who are using it:
-
-  cap backupmyapp:connect
-
-When you install plugin and connect it with our server, backups will be performed automatically.
+Then press "I completed" button on your domain page.
 
 == Restore
 
