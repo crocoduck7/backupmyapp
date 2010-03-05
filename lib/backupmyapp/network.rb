@@ -4,7 +4,7 @@ class Backupmyapp
   class Network
     MAX_RETRY_ATTEMPTS = 4
     HOST = "https://backupmyapp.com"
-    PLUGIN_VERSION = '1.0.5'
+    PLUGIN_VERSION = '1.0.6'
     
     def initialize(key)
       @key = key

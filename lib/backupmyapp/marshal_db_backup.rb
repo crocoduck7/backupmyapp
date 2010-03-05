@@ -115,12 +115,13 @@ class Backupmyapp
       }
     end
  
-    def self.each_table_page(table, records_per_page = 5000)
+    def self.each_table_page(table, records_per_page = 50000)
       id = table_column_names(table).first
       pages = table_pages(table, records_per_page) - 1
       quoted_table = MarshalDbBackup.quote_table(table)
  
       (0..pages).to_a.each do |page|
+        ActiveRecord::Base.connection.reconnect!
         sql = ActiveRecord::Base.connection.add_limit_offset!("SELECT * FROM #{quoted_table} ORDER BY #{id}", { :limit => records_per_page, :offset => records_per_page * page })
         records = ActiveRecord::Base.connection.select_all(sql)
         yield records
