@@ -72,6 +72,7 @@ class Backupmyapp
     end
  
     def self.quote_table(table)
+      ActiveRecord::Base.connection.reconnect!
       ActiveRecord::Base.connection.quote_table_name(table)
     end
   end
@@ -136,14 +137,17 @@ class Backupmyapp
  
     def self.table_record_count(table)
       quoted_table = MarshalDbBackup.quote_table(table)
+      ActiveRecord::Base.connection.reconnect!
       ActiveRecord::Base.connection.select_one("SELECT COUNT(*) FROM #{quoted_table}").values.first.to_i
     end
  
     def self.table_column_names(table)
+      ActiveRecord::Base.connection.reconnect!
       ActiveRecord::Base.connection.columns(table).map { |c| c.name }
     end
  
     def self.tables
+      ActiveRecord::Base.connection.reconnect!
       ActiveRecord::Base.connection.tables.reject { |table| ['schema_info', 'schema_migrations'].include?(table) }
     end
   end
