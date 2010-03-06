@@ -25,11 +25,16 @@ class Backupmyapp
     load_config("backup")
     begin
       Database.backup
+    rescue => exception
+      @server.error("backup", exception.backtrace.join("\n"))
+    end
+    
+    begin
       files = @server.diff(app_file_structure)
       files = trim_timestamps(app_file_structure) if files == "ALL"
       upload_files(files) if files && files.any?
-    rescue
-      @server.error("backup", $!)
+    rescue => exception
+      @server.error("backup", exception.backtrace.join("\n"))
     end
     @server.finish("backup")
   end
