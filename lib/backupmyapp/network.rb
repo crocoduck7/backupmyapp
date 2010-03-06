@@ -67,7 +67,7 @@ class Backupmyapp
     end
     
     def upload_collection(collection, try = 0)
-      collection.each_slice(6) do |slice|
+      collection.each_slice(12) do |slice|
         threads = []
         slice.each do |file| 
           threads << Thread.new do
